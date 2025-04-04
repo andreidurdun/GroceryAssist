@@ -1,0 +1,23 @@
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/GroceryAssistDB</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">andrei24</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+
+        <!-- Activează crearea automată a tabelelor -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Afișează SQL-ul generat în consolă -->
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- Mapează clasele -->
+        <mapping class="com.grocery.assist.model.Product"/>
+        <mapping class="com.grocery.assist.model.Category"/>
+        <mapping class="com.grocery.assist.model.Subcategory"/>
+        <mapping class="com.grocery.assist.model.ShoppingList"/>
+
+    </session-factory>
+</hibernate-configuration>
