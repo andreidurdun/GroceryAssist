@@ -43,8 +43,8 @@ public class Scraper {
         }
     }
 
-    public static void scrapeJsoup() {
-        String url = "https://www.auchan.ro/lactate-carne-mezeluri---peste/lactate/lapte/c";
+    public static void scrapeJsoup(String url) {
+        //String url = "https://www.auchan.ro/lactate-carne-mezeluri---peste/lactate/lapte/c";
 
         try {
             Document doc = Jsoup.connect(url)

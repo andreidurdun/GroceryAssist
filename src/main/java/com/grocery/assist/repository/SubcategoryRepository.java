@@ -1,10 +1,17 @@
 package com.grocery.assist.repository;
 
-import com.grocery.assist.util.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import com.grocery.assist.model.Subcategory;
+import jakarta.persistence.EntityManager;
+
 
 public class SubcategoryRepository {
-    private final Session session = HibernateUtil.getSessionFactory().openSession();
-    private final Transaction tx = session.beginTransaction();
+    private final EntityManager entityManager;
+
+    public SubcategoryRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    public Subcategory findById(Long id) {
+        return entityManager.find(Subcategory.class, id);
+    }
 }

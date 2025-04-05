@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-
 public class Category {
 
     @Id
@@ -16,7 +16,7 @@ public class Category {
     private String name;
 
     @OneToMany
-    private List<Subcategory> subcategories;
+    private Set<Subcategory> subcategories;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Product> products; // e.g., ["milk", "cheese", "yogurt"]
@@ -32,7 +32,7 @@ public class Category {
     }
 
 
-    public final List<Product> getProducts(){
+    public List<Product> getProducts(){
         return (new ArrayList<Product>(this.products));
     }
 }
