@@ -1,0 +1,35 @@
+CREATE TABLE shoppinglist (
+    id BIGSERIAL PRIMARY KEY,
+    date TIMESTAMP
+);
+
+CREATE TABLE category (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE subcategory (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    link VARCHAR(255),
+    category_id BIGINT,
+    FOREIGN KEY (category_id) REFERENCES category(id)
+);
+
+CREATE TABLE product (
+    id BIGSERIAL PRIMARY KEY,
+    productname VARCHAR(255),
+    price NUMERIC(10, 2),
+    category_id BIGINT,
+    FOREIGN KEY (category_id) REFERENCES category(id)
+);
+
+CREATE TABLE shoppinglist_product (
+    id BIGSERIAL PRIMARY KEY,
+    shoppinglist_id BIGINT,
+    product_id BIGINT,
+    FOREIGN KEY (shoppinglist_id) REFERENCES shoppinglist(id),
+    FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+

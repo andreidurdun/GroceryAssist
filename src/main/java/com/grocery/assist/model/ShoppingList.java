@@ -3,35 +3,47 @@ package com.grocery.assist.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-@Entity
-public class ShoppingList {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+public class ShoppingList implements Comparable<ShoppingList>{
     private Long id;
-    private final List<String> rawItems;       // User's raw input (e.g., ["milk", "bread"])
+    private Date date;
+    private List<Product> products;
 
-    @OneToMany
-    private List<Product> resolvedItems; // Auto-matched products
-
-    private List<String> unresolvedItems; // Items not recognized, e.g., typos like "melk"
-
-
-
-    public ShoppingList(List<String> rawItems) {
-        this.rawItems = new ArrayList<>(rawItems);
+    public ShoppingList() {
+        this.id = (long) -1;
+        this.date = new Date();
+        this.products = new ArrayList<Product>();
     }
 
-    public List<String> getRawItems(){
-        return (new ArrayList<String>(this.rawItems));
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public List<Product> getResolvedItems(){
-        return (new ArrayList<Product>(this.resolvedItems));
+    public void setDate(Date date){
+        this.date = date;
     }
 
-    public List<String> getUnresolvedItems(){
-        return (new ArrayList<String>(this.unresolvedItems));
+    public void setProducts(List<Product> products) {
+        this.products = new ArrayList<>(products);
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public Date getDate() {
+        return date;
+    }
+    public List<Product> getProducts() {
+        if (products == null)
+            return null;
+        return new ArrayList<>(products);
+    }
+    @Override
+    public int compareTo(ShoppingList o) {
+        return this.date.compareTo(o.date);
     }
 }
