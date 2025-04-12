@@ -13,7 +13,7 @@ public class ProductRepository implements RepositoryInterface<Product> {
     private final Connection con;
 
 
-    public ProductRepository(Connection con) throws SQLException {
+    public ProductRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
     }
 
@@ -39,8 +39,8 @@ public class ProductRepository implements RepositoryInterface<Product> {
     }
 
     @Override
-    public void save(Product ob) throws SQLException {
-
+    public Long save(Product ob) throws SQLException {
+            return null;
     }
 
     @Override

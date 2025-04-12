@@ -18,7 +18,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
 
     public ShoppingListRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
-        this.productRepository = new ProductRepository(con);
+        this.productRepository = new ProductRepository();
     }
 
     public List<ShoppingList> findByDate(Date fromDate, Date toDate) throws SQLException {
@@ -58,7 +58,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
         return shLists;
     }
 
-    public void save(ShoppingList shoppingList) throws SQLException {
+    public Long save(ShoppingList shoppingList) throws SQLException {
         String query = "INSERT INTO shoppinglist (date) VALUES (?)";
         PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         stmt.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
@@ -74,7 +74,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
         //inseram produsele daca nu exista deja, daca exista inseram in tabela de legatura
         String insertProductQuery = "INSERT INTO product (price, category_id, productname) VALUES (?, ?, ?)";
         if(shoppingList.getProducts() == null){ //daca nu exista produse in shoppingList ne oprim
-            return;
+            return shoppingListId;
         }
         for(Product product: shoppingList.getProducts()){
             if(productRepository.find(product.getId()) == null) {
@@ -111,8 +111,8 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
             }
 
         }
-
-        }
+        return shoppingListId;
+    }
 
         @Override
         public ShoppingList find(Long id) throws SQLException {

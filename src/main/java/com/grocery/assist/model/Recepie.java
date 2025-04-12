@@ -16,6 +16,14 @@ public class Recepie {
         this.ingredients = new ArrayList<Ingredient>(ingredients);
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return (new ArrayList<>(this.ingredients));
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

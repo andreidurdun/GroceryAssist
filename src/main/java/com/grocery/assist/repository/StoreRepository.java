@@ -18,7 +18,7 @@ public class StoreRepository implements RepositoryInterface<Store> {
     }
 
     @Override
-    public void save(Store ob) throws SQLException {
+    public Long save(Store ob) throws SQLException {
         String query = "INSERT INTO Store (name) VALUES (?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, ob.getName());
@@ -49,6 +49,7 @@ public class StoreRepository implements RepositoryInterface<Store> {
             ps3.setString(3, category.getLink());
             ps3.executeUpdate();
         }
+        return id;
     }
 
 
