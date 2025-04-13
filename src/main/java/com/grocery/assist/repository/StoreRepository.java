@@ -69,4 +69,9 @@ public class StoreRepository implements RepositoryInterface<Store> {
     public void update(Long id) throws SQLException {
         // Implementation for updating a Store object by its ID
     }
+
+    @Override
+    public List<Store> findAll() throws SQLException {
+        return List.of();
+    }
 }

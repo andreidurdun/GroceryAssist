@@ -1,5 +1,6 @@
 package com.grocery.assist.repository;
 
+import com.grocery.assist.model.Ingredient;
 import com.grocery.assist.model.ShoppingList;
 import com.grocery.assist.util.DBConnectionManager;
 import com.grocery.assist.model.Product;
@@ -72,7 +73,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
         stmt.close();
 
         //inseram produsele daca nu exista deja, daca exista inseram in tabela de legatura
-        String insertProductQuery = "INSERT INTO product (price, category_id, productname) VALUES (?, ?, ?)";
+        String insertProductQuery = "INSERT INTO product (price, category_id, productname, quantity, unit, recipe_id) VALUES (?, ?, ?, ?, ?, ?)";
         if(shoppingList.getProducts() == null){ //daca nu exista produse in shoppingList ne oprim
             return shoppingListId;
         }
@@ -86,6 +87,21 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
                     prstmt.setNull(2, Types.BIGINT); // setăm categoryId ca NULL în baza de date
                 }
                 prstmt.setString(3, product.getProductName());
+                if (product instanceof Ingredient) {
+                    prstmt.setFloat(4, ((Ingredient) product).getQuantity());
+                    prstmt.setString(5, ((Ingredient) product).getUnit());
+                    if (((Ingredient) product).getRecepieId() != null) {
+                        prstmt.setLong(6, ((Ingredient) product).getRecepieId());
+                    } else {
+                        prstmt.setNull(6, Types.BIGINT);
+                    }
+
+                }
+                else{
+                    prstmt.setNull(4, Types.FLOAT);
+                    prstmt.setNull(5, Types.VARCHAR);
+                    prstmt.setNull(6, Types.BIGINT);
+                }
                 prstmt.executeUpdate();
 
                 ResultSet rs2 = prstmt.getGeneratedKeys();
@@ -107,7 +123,6 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
                 prstmt3.setLong(1, shoppingListId);
                 prstmt3.setLong(2, product.getId());
                 prstmt3.executeUpdate();
-                prstmt3.close();
             }
 
         }
@@ -128,4 +143,9 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
         public void update(Long id) throws SQLException {
 
         }
+
+    @Override
+    public List<ShoppingList> findAll() throws SQLException {
+        return List.of();
+    }
 }

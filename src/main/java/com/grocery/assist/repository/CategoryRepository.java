@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class CategoryRepository implements  RepositoryInterface<Category> {
     private final Connection con;
@@ -41,5 +42,10 @@ public class CategoryRepository implements  RepositoryInterface<Category> {
     @Override
     public void update(Long id) throws SQLException {
         // Implementation for updating a Category object by its ID
+    }
+
+    @Override
+    public List<Category> findAll() throws SQLException {
+        return List.of();
     }
 }

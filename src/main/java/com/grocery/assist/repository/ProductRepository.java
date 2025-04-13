@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ProductRepository implements RepositoryInterface<Product> {
     private final Connection con;
@@ -51,5 +52,10 @@ public class ProductRepository implements RepositoryInterface<Product> {
     @Override
     public void update(Long id) throws SQLException {
 
+    }
+
+    @Override
+    public List<Product> findAll() throws SQLException {
+        return List.of();
     }
 }

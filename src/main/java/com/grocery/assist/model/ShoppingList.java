@@ -1,6 +1,5 @@
 package com.grocery.assist.model;
 
-import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,9 +12,9 @@ public class ShoppingList implements Comparable<ShoppingList>{
     private List<Product> products;
 
     public ShoppingList() {
-        this.id = (long) -1;
+
         this.date = new Date();
-        this.products = new ArrayList<Product>();
+        this.products = new ArrayList<>();
     }
 
 
@@ -45,5 +44,15 @@ public class ShoppingList implements Comparable<ShoppingList>{
     @Override
     public int compareTo(ShoppingList o) {
         return this.date.compareTo(o.date);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Shopping List: ").append(date).append("\n");
+        for (Product product : products) {
+            sb.append(product.toString()).append("\n");
+        }
+        return sb.toString();
     }
 }

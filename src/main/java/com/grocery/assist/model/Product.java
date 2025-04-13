@@ -52,4 +52,9 @@ public class Product {
     public Long getCategoryId() {
         return category_id;
     }
+
+    @Override
+    public String toString() {
+        return this.productName;
+    }
 }

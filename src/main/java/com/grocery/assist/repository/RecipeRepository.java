@@ -1,15 +1,14 @@
 package com.grocery.assist.repository;
 
 import com.grocery.assist.model.Ingredient;
-import com.grocery.assist.model.Recepie;
+import com.grocery.assist.model.Recipe;
 import com.grocery.assist.util.DBConnectionManager;
-import com.grocery.assist.model.Ingredient;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-public class RecipeRepository implements RepositoryInterface<Recepie> {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecipeRepository implements RepositoryInterface<Recipe> {
     private final Connection con;
     private final IngredientRepository ingredientRepository;
 
@@ -19,7 +18,7 @@ public class RecipeRepository implements RepositoryInterface<Recepie> {
     }
 
     @Override
-    public Long save(Recepie ob) throws SQLException {
+    public Long save(Recipe ob) throws SQLException {
         String query = "INSERT INTO recipe (name) VALUES (?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, ob.getName());
@@ -31,7 +30,7 @@ public class RecipeRepository implements RepositoryInterface<Recepie> {
         }
 
         for(Ingredient ingredient : ob.getIngredients()) {
-            ingredient.setRecipeId(id);
+            ingredient.setRecepieId(id);
             ingredientRepository.save(ingredient);
         }
 
@@ -39,7 +38,7 @@ public class RecipeRepository implements RepositoryInterface<Recepie> {
     }
 
     @Override
-    public Recepie find(Long id) throws SQLException {
+    public Recipe find(Long id) throws SQLException {
         return null;
     }
 
@@ -51,5 +50,24 @@ public class RecipeRepository implements RepositoryInterface<Recepie> {
     @Override
     public void update(Long id) throws SQLException {
 
+    }
+
+    @Override
+    public List<Recipe> findAll() throws SQLException {
+        List<Recipe> recepies = new ArrayList<>();
+        String query = "SELECT * FROM recipe";
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()) {
+            long id = rs.getLong(1);
+            String name = rs.getString(2);
+            Recipe recipe = new Recipe();
+            recipe.setId(id);
+            recipe.setName(name);
+            List<Ingredient> ingredients = ingredientRepository.findByRecipeId(id);
+            recipe.setIngredients(ingredients);
+            recepies.add(recipe);
+        }
+        return recepies;
     }
 }

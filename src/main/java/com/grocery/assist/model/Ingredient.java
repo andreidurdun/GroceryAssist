@@ -1,29 +1,19 @@
 package com.grocery.assist.model;
 
 
-public class Ingredient implements Comparable<Ingredient> {
-    private Long id;
-    private String name;
+public class Ingredient extends Product implements Comparable<Ingredient> {
     private Float quantity;
     private String unit;  //JComboBox<Unit>
-    private Long recipeId;
+    private Long recepieId;
 
     public Ingredient(){
-
+        super();
     }
+
     public Ingredient(String name, Float quantity, String unit) {
-        this.name = name;
+        super(name);
         this.quantity = quantity;
         this.unit = unit;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public String getName()
-    {
-        return this.name;
     }
 
     public String getUnit()
@@ -36,21 +26,18 @@ public class Ingredient implements Comparable<Ingredient> {
         return this.quantity;
     }
 
-    public void setRecipeId(Long id) {
-        this.id = id;
+    public void setRecepieId(Long id) {
+        this.recepieId = id;
     }
 
-    public Long getRecipeId() {
-        return this.recipeId;
+    public Long getRecepieId() {
+        return this.recepieId;
     }
 
     public void setQuantity(Float quantity) {
         this.quantity = quantity;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void setUnit(String unit) {
         this.unit = unit;
@@ -58,12 +45,12 @@ public class Ingredient implements Comparable<Ingredient> {
 
     @Override
     public int compareTo(Ingredient o) {
-        return this.name.compareTo(o.name);
+        return this.getProductName().compareTo(o.getProductName());
     }
 
     @Override
     public String toString() {
-        return this.name + " " + this.quantity + " " + this.unit;
+        return this.getProductName() + " " + this.quantity + " " + this.unit;
     }
 
     @Override
@@ -71,12 +58,12 @@ public class Ingredient implements Comparable<Ingredient> {
         if (this == o) return true;
         if (!(o instanceof Ingredient)) return false;
         Ingredient that = (Ingredient) o;
-        return name.equalsIgnoreCase(that.name); // compara dupa nume
+        return getProductName().equalsIgnoreCase(that.getProductName()); // compara dupa nume
     }
 
     @Override
     public int hashCode() {
-        return name.toLowerCase().hashCode();
+        return getProductName().toLowerCase().hashCode();
     }
 
 }
