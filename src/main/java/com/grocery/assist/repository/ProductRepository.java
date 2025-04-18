@@ -41,7 +41,22 @@ public class ProductRepository implements RepositoryInterface<Product> {
 
     @Override
     public Long save(Product ob) throws SQLException {
-            return null;
+        String query = "INSERT INTO product (price, category_id, productname) VALUES (?, ?, ?)";
+        PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        ps.setDouble(1, ob.getPrice());
+        if (ob.getCategoryId() != null) {
+            ps.setLong(2, ob.getCategoryId());
+        } else {
+            ps.setNull(2, java.sql.Types.BIGINT);
+        }
+        ps.setString(3, ob.getProductName());
+        ps.executeUpdate();
+        ResultSet rs = ps.getGeneratedKeys();
+        long id = 0;
+        if (rs.next()) {
+            id = rs.getLong(1);
+        }
+        return id;
     }
 
     @Override
@@ -50,7 +65,7 @@ public class ProductRepository implements RepositoryInterface<Product> {
     }
 
     @Override
-    public void update(Long id) throws SQLException {
+    public void update(Product id) throws SQLException {
 
     }
 

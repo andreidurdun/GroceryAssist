@@ -40,7 +40,7 @@ public class CategoryRepository implements  RepositoryInterface<Category> {
     }
 
     @Override
-    public void update(Long id) throws SQLException {
+    public void update(Category id) throws SQLException {
         // Implementation for updating a Category object by its ID
     }
 

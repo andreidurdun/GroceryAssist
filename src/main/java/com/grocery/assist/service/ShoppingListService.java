@@ -21,15 +21,6 @@ public class ShoppingListService {
         this.recepieService = new RecipeService();
     }
 
-    //Afisarea istoricului de liste dupa data
-    public List<ShoppingList> getShoppingHistory(Date fromDate, Date toDate) throws SQLException {
-        List<ShoppingList> shoppingLists;
-        shoppingLists = repository.findByDate(fromDate, toDate);
-        Collections.sort(shoppingLists);
-
-        return shoppingLists;
-    }
-
     //creeaza o lista de cumparaturi
     public ShoppingList createShoppingListFromProducts(List<Product> products) throws SQLException {
         ShoppingList shoppingList = new ShoppingList();

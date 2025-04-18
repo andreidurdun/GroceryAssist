@@ -24,7 +24,11 @@ public class IngredientRepository implements RepositoryInterface<Ingredient> {
         ps.setString(1, ob.getProductName());
         ps.setFloat(2, ob.getQuantity());
         ps.setString(3, ob.getUnit());
-        ps.setLong(4, ob.getRecepieId());
+        if (ob.getRecipeId() != null) {
+            ps.setLong(4, ob.getRecipeId());
+        } else {
+            ps.setNull(4, java.sql.Types.BIGINT);
+        }
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -38,6 +42,22 @@ public class IngredientRepository implements RepositoryInterface<Ingredient> {
 
     @Override
     public Ingredient find(Long id) throws SQLException {
+        String query = "SELECT * FROM product WHERE id = ?";
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Ingredient ingredient = new Ingredient();
+            ingredient.setId(rs.getLong("id"));
+            ingredient.setProductName(rs.getString("productname"));
+            ingredient.setQuantity(rs.getFloat("quantity"));
+            if(rs.wasNull()) { //dc quantity e null inseamna ca e produs
+                return null;
+            }
+            ingredient.setUnit(rs.getString("unit"));
+            ingredient.setRecipeId(rs.getLong("recipe_id"));
+            return ingredient;
+        }
         return null;
     }
 
@@ -47,7 +67,7 @@ public class IngredientRepository implements RepositoryInterface<Ingredient> {
     }
 
     @Override
-    public void update(Long id) throws SQLException {
+    public void update(Ingredient id) throws SQLException {
 
     }
 
@@ -68,7 +88,7 @@ public class IngredientRepository implements RepositoryInterface<Ingredient> {
             ingredient.setProductName(rs.getString("productname"));
             ingredient.setQuantity(rs.getFloat("quantity"));
             ingredient.setUnit(rs.getString("unit"));
-            ingredient.setRecepieId(id);
+            ingredient.setRecipeId(id);
             ingredients.add(ingredient);
         }
         return ingredients;

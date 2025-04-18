@@ -49,7 +49,7 @@ public class ShoppingList implements Comparable<ShoppingList>{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Shopping List: ").append(date).append("\n");
+        sb.append("Shopping List: ").append(date).append("\n\n");
         for (Product product : products) {
             sb.append(product.toString()).append("\n");
         }

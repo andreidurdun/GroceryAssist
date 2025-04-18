@@ -8,6 +8,8 @@ public class Ingredient extends Product implements Comparable<Ingredient> {
 
     public Ingredient(){
         super();
+        this.quantity = 1f;
+        this.unit = "buc";
     }
 
     public Ingredient(String name, Float quantity, String unit) {
@@ -26,11 +28,11 @@ public class Ingredient extends Product implements Comparable<Ingredient> {
         return this.quantity;
     }
 
-    public void setRecepieId(Long id) {
+    public void setRecipeId(Long id) {
         this.recepieId = id;
     }
 
-    public Long getRecepieId() {
+    public Long getRecipeId() {
         return this.recepieId;
     }
 

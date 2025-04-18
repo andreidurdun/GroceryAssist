@@ -30,7 +30,7 @@ public class RecipeRepository implements RepositoryInterface<Recipe> {
         }
 
         for(Ingredient ingredient : ob.getIngredients()) {
-            ingredient.setRecepieId(id);
+            ingredient.setRecipeId(id);
             ingredientRepository.save(ingredient);
         }
 
@@ -44,12 +44,28 @@ public class RecipeRepository implements RepositoryInterface<Recipe> {
 
     @Override
     public void delete(Long id) throws SQLException {
+        String query1 = "DELETE FROM product WHERE recipe_id = ?";
+        PreparedStatement ps1 = con.prepareStatement(query1);
+        ps1.setLong(1, id);
+        ps1.executeUpdate();
 
+        String query = "DELETE FROM recipe WHERE id = ?";
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.setLong(1, id);
+        ps.executeUpdate();
     }
 
     @Override
-    public void update(Long id) throws SQLException {
+    public void update(Recipe ob) throws SQLException {
+        String query1 = "DELETE FROM product WHERE recipe_id = ?";
+        PreparedStatement ps = con.prepareStatement(query1);
+        ps.setLong(1, ob.getId());
+        ps.executeUpdate();
 
+        for(Ingredient ingredient : ob.getIngredients()) {
+            ingredient.setRecipeId(ob.getId());
+            ingredientRepository.save(ingredient);
+        }
     }
 
     @Override

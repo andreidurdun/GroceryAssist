@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.List;
 
 
-public class ShoppingListUI2 extends JFrame {
+public class ShoppingListUI2 extends JPanel implements Refreshable{
     private final RecipeRepository recipeRepository;
     private final RecipeService recipeService = new RecipeService();
     private final IngredientService ingredientService = new IngredientService();
@@ -32,31 +32,30 @@ public class ShoppingListUI2 extends JFrame {
 
     private List<Recipe> recipes = new ArrayList<>();
 
-    public ShoppingListUI2() throws SQLException {
+    public ShoppingListUI2(AppUI app) throws SQLException {
+        setLayout(new BorderLayout());
+
         try {
             recipeRepository = new RecipeRepository();
         } catch (Exception e) {
             throw new RuntimeException("Eroare la inițializarea rețetelor: " + e.getMessage());
         }
-        setTitle("Shopping List Manager");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 700);
-        setLayout(new BorderLayout());
+
 
         // Inițializare rețete
         recipes = recipeRepository.findAll();
-
 
         // Panel pentru produse și rețete existente
         JPanel topPanel = new JPanel(new GridLayout(6, 1));
 
         productField = new JTextField();
-        JButton addProductButton = new JButton("Adaugă Produs");
+        JButton addProductButton = new JButton("Adauga Produs");
+
 
         recipeComboBox = new JComboBox<Recipe>(new Vector<>(recipes));
-        JButton addRecipeButton = new JButton("Adaugă Rețetă în listă");
+        JButton addRecipeButton = new JButton("Adauga Reteta in lista");
 
-        JButton addShoppingListButton = new JButton("Salveaza lista de cumpărături");
+        JButton addShoppingListButton = new JButton("Salveaza lista de cumparaturi");
 
         listModel = new DefaultListModel<>();
         shoppingList = new JList<>(listModel);
@@ -80,24 +79,24 @@ public class ShoppingListUI2 extends JFrame {
             }
         });
 
-        topPanel.add(new JLabel("Adaugă produs individual:"));
+        topPanel.add(new JLabel("Adauga produs individual:"));
         topPanel.add(productField);
         topPanel.add(addProductButton);
-        topPanel.add(new JLabel("Selectează rețetă existentă:"));
+        topPanel.add(new JLabel("Selecteaza reteta existenta:"));
         topPanel.add(recipeComboBox);
         topPanel.add(addRecipeButton);
 
 
-        // Panel pentru adăugare rețetă nouă
+        // Panel pentru adaugare rețeta noua
         JPanel newRecipePanel = new JPanel();
         newRecipePanel.setLayout(new BorderLayout());
-        newRecipePanel.setBorder(BorderFactory.createTitledBorder("Adaugă rețetă nouă"));
+        newRecipePanel.setBorder(BorderFactory.createTitledBorder("Adauga reteta noua"));
 
         JPanel nameAndButtonPanel = new JPanel(new BorderLayout());
         newRecipeNameField = new JTextField();
-        JButton createRecipeButton = new JButton("Adaugă Rețetă");
+        JButton createRecipeButton = new JButton("Adauga Reteta");
 
-        nameAndButtonPanel.add(new JLabel("Nume rețetă:"), BorderLayout.NORTH);
+        nameAndButtonPanel.add(new JLabel("Nume reteta:"), BorderLayout.NORTH);
         nameAndButtonPanel.add(newRecipeNameField, BorderLayout.CENTER);
         nameAndButtonPanel.add(createRecipeButton, BorderLayout.EAST);
 
@@ -130,7 +129,7 @@ public class ShoppingListUI2 extends JFrame {
                 }
 
                 recipeComboBox.addItem(new Recipe(name, ingredientList));
-                JOptionPane.showMessageDialog(this, "Rețetă adăugată cu succes!");
+                JOptionPane.showMessageDialog(this, "Reteta adaugata cu succes!");
                 newRecipeNameField.setText("");
                 newRecipeIngredientsArea.setText("");
             }
@@ -145,7 +144,7 @@ public class ShoppingListUI2 extends JFrame {
                 throw new RuntimeException(ex);
             }
             System.out.println(shoppingList.toString());
-            JOptionPane.showMessageDialog(this, shoppingList.toString(), "Lista de cumpărături", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, shoppingList.toString(), "Lista de cumparaturi", JOptionPane.INFORMATION_MESSAGE);
         });
 
         add(topPanel, BorderLayout.NORTH);
@@ -169,7 +168,7 @@ public class ShoppingListUI2 extends JFrame {
         SwingUtilities.invokeLater(() -> {
             ShoppingListUI2 ui = null;
             try {
-                ui = new ShoppingListUI2();
+                ui = new ShoppingListUI2(new AppUI());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -178,6 +177,21 @@ public class ShoppingListUI2 extends JFrame {
     }
 
 
+    @Override
+    public void refresh() {
+        listModel.clear();
+        try {
+            recipes = recipeRepository.findAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        recipeComboBox.removeAllItems();
+
+        for (Recipe recipe : recipes) {
+            recipeComboBox.addItem(recipe);
+        }
+
+    }
 }
 
 

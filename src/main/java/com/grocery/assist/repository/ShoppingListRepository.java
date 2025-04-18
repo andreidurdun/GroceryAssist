@@ -8,56 +8,19 @@ import com.grocery.assist.model.Product;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ShoppingListRepository implements  RepositoryInterface<ShoppingList> {
 
-
     private final Connection con;
     private final ProductRepository productRepository;
+    private final IngredientRepository ingredientRepository = new IngredientRepository();
 
     public ShoppingListRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
         this.productRepository = new ProductRepository();
     }
 
-    public List<ShoppingList> findByDate(Date fromDate, Date toDate) throws SQLException {
-
-        String query = "SELECT id, date FROM ShoppingList WHERE date >= ? AND date <= ?";
-        PreparedStatement stmt = con.prepareStatement(query);
-        stmt.setDate(1, (java.sql.Date) fromDate);
-        stmt.setDate(2, (java.sql.Date) toDate);
-        ResultSet rs = stmt.executeQuery(query);
-
-        List<ShoppingList> shLists = new ArrayList<>();
-        while(rs.next()){
-            ShoppingList shoppingList = new ShoppingList();
-            Long id = rs.getLong("id");
-            Date date = rs.getDate("date");
-            shoppingList.setDate(date);
-            shoppingList.setId(id);
-
-            String query2 = "SELECT * FROM Product WHERE shoppinglist_id = id";
-            Statement stmt2 = con.createStatement();
-            ResultSet rs2 = stmt2.executeQuery(query2);
-
-            List<Product> products = new ArrayList<>();
-            while(rs2.next()){
-                Product product = new Product();
-                product.setId(rs2.getLong("id"));
-                product.setProductName(rs2.getString("name"));
-                product.setPrice(rs2.getDouble("price"));
-                product.setCategory(rs2.getLong("category_id"));
-                products.add(product);
-            }
-
-            shoppingList.setProducts(products);
-            shLists.add(shoppingList);
-        }
-
-        return shLists;
-    }
 
     public Long save(ShoppingList shoppingList) throws SQLException {
         String query = "INSERT INTO shoppinglist (date) VALUES (?)";
@@ -90,8 +53,8 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
                 if (product instanceof Ingredient) {
                     prstmt.setFloat(4, ((Ingredient) product).getQuantity());
                     prstmt.setString(5, ((Ingredient) product).getUnit());
-                    if (((Ingredient) product).getRecepieId() != null) {
-                        prstmt.setLong(6, ((Ingredient) product).getRecepieId());
+                    if (((Ingredient) product).getRecipeId() != null) {
+                        prstmt.setLong(6, ((Ingredient) product).getRecipeId());
                     } else {
                         prstmt.setNull(6, Types.BIGINT);
                     }
@@ -136,16 +99,97 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
 
         @Override
         public void delete(Long id) throws SQLException {
+            String query3 = "SELECT product_id FROM shoppinglist_product WHERE shoppinglist_id = ?";
+            PreparedStatement ps3 = con.prepareStatement(query3);
+            ps3.setLong(1, id);
+            ResultSet rs3 = ps3.executeQuery();
+            long productId = 0;
+            if(rs3.next()) {
+                productId = rs3.getLong("product_id");
+            }
+
+            String query1 = "DELETE FROM shoppinglist_product WHERE shoppinglist_id = ?";
+            PreparedStatement ps1 = con.prepareStatement(query1);
+            ps1.setLong(1, id);
+            ps1.executeUpdate();
+
+            String query2 = "DELETE FROM product WHERE recipe_id is null and id = ?";
+            PreparedStatement ps2 = con.prepareStatement(query2);
+            ps2.setLong(1, productId);
+            ps2.executeUpdate();
+
+            String query = "DELETE FROM shoppinglist WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setLong(1, id);
+            ps.executeUpdate();
 
         }
 
         @Override
-        public void update(Long id) throws SQLException {
+        public void update(ShoppingList shoppingList) throws SQLException {
+            String query = "UPDATE shoppinglist SET date = ? WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+            ps.setLong(2, shoppingList.getId());
+            ps.executeUpdate();
+            //stergem produsele din tabela de legatura si le inseram pe cele editate
+            String query2 = "DELETE FROM shoppinglist_product WHERE shoppinglist_id = ?";
+            PreparedStatement ps2 = con.prepareStatement(query2);
+            ps2.setLong(1, shoppingList.getId());
+            ps2.executeUpdate();
+
+            for(Product product: shoppingList.getProducts()){
+                long id_produs = 0;
+                if(product instanceof Ingredient){
+                    System.out.println("Ingredient: " + product.getProductName());
+                    id_produs = ingredientRepository.save((Ingredient) product);
+                }
+                else{
+                    System.out.println("Product: " + product.getProductName());
+                    id_produs = productRepository.save(product);
+                }
+
+                String query3 = "INSERT INTO shoppinglist_product (shoppinglist_id, product_id) VALUES (?, ?)";
+                PreparedStatement ps3 = con.prepareStatement(query3);
+                ps3.setLong(1, shoppingList.getId());
+                ps3.setLong(2, id_produs);
+                ps3.executeUpdate();
+            }
 
         }
 
     @Override
     public List<ShoppingList> findAll() throws SQLException {
-        return List.of();
+        List<ShoppingList> shoppingLists = new ArrayList<>();
+        String query = "SELECT * FROM shoppinglist";
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()) {
+            ShoppingList shoppingList = new ShoppingList();
+            shoppingList.setId(rs.getLong("id"));
+            shoppingList.setDate(rs.getDate("date"));
+
+            String query2 = "SELECT * FROM shoppinglist_product WHERE shoppinglist_id = ?";
+            PreparedStatement stmt2 = con.prepareStatement(query2);
+            stmt2.setLong(1, shoppingList.getId());
+            ResultSet rs2 = stmt2.executeQuery();
+
+            List<Product> products = new ArrayList<>();
+            while (rs2.next()) {
+                if(ingredientRepository.find(rs2.getLong("product_id")) != null) {
+                    Ingredient ingredient = ingredientRepository.find(rs2.getLong("product_id"));
+                    products.add(ingredient);
+                }
+                else{
+                    Product product = productRepository.find(rs2.getLong("product_id"));
+                    products.add(product);
+                }
+            }
+
+            shoppingList.setProducts(products);
+            shoppingLists.add(shoppingList);
+        }
+
+        return shoppingLists;
     }
 }

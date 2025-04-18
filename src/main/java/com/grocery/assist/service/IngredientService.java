@@ -38,11 +38,14 @@ public class IngredientService {
 
         StringBuilder ingName = new StringBuilder();
         int i = 0;
-        while(!isNumeric(split[i])) {
+        while(i < split.length && !isNumeric(split[i])) {
             ingName.append(split[i]).append(" ");
             i++;
         }
-
+        if(i >= split.length) {
+            ingredient.setProductName(ingName.toString());
+            return ingredient;
+        }
         Float quantity = Float.parseFloat(split[i]);
         String unit = ing.trim().split(" ")[i+1];
         ingredient.setProductName(ingName.toString());
@@ -52,21 +55,37 @@ public class IngredientService {
         return ingredient;
     }
 
+    public static boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) return false;
+        try {
+            Float.parseFloat(str); // sau Double.parseDouble(str)
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public static void main(String[] args) {
         // Test the mergeIngredients method
         List<Ingredient> ingredients = new ArrayList<>();
         // Add some test ingredients to the list
-        ingredients.add(new Ingredient("Tomato", 2.0f, "g"));
-        ingredients.add(new Ingredient("Onion", 1.0f, "g"));
-        ingredients.add(new Ingredient("Tomato", 3.0f, "g"));
-        ingredients.add(new Ingredient("Cucumber", 1.0f, "g"));
+//        ingredients.add(new Ingredient("Tomato", 2.0f, "g"));
+//        ingredients.add(new Ingredient("Onion", 1.0f, "g"));
+//        ingredients.add(new Ingredient("Tomato", 3.0f, "g"));
+//        ingredients.add(new Ingredient("Cucumber", 1.0f, "g"));
+//
+//        IngredientService ingredientService = new IngredientService();
+//        List<Ingredient> mergedIngredients = ingredientService.mergeIngredients(ingredients);
+//
+//        // Print the merged ingredients
+//        for (Ingredient ingredient : mergedIngredients) {
+//            System.out.println(ingredient);
+//        }
 
+        // Test the ingredientParser method
+        String testIngredient = "Tomato 2.0 g";
         IngredientService ingredientService = new IngredientService();
-        List<Ingredient> mergedIngredients = ingredientService.mergeIngredients(ingredients);
-
-        // Print the merged ingredients
-        for (Ingredient ingredient : mergedIngredients) {
-            System.out.println(ingredient);
-        }
+        Ingredient parsedIngredient = ingredientService.ingredientParser(testIngredient);
+        System.out.println("Parsed Ingredient: " + parsedIngredient);
     }
 }

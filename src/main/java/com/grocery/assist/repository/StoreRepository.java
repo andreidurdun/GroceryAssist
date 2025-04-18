@@ -66,7 +66,7 @@ public class StoreRepository implements RepositoryInterface<Store> {
     }
 
     @Override
-    public void update(Long id) throws SQLException {
+    public void update(Store id) throws SQLException {
         // Implementation for updating a Store object by its ID
     }
 

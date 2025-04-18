@@ -36,15 +36,20 @@ public class Recipe {
     public Long getId() {
         return this.id;
     }
+
+    public String toString2() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("     ").append(name).append("\n\n");
+        for (Ingredient ingredient : ingredients) {
+            sb.append(ingredient.toString()).append("\n");
+        }
+        return sb.toString();
+
+
+    }
+
     @Override
     public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("Recepie: ").append(name).append("\n");
-//        for (Ingredient ingredient : ingredients) {
-//            sb.append(ingredient.toString()).append("\n");
-//        }
-//        return sb.toString();
-
         return this.name;
     }
 }
