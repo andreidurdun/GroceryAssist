@@ -25,4 +25,6 @@ The machine learning model used for product categorization was **trained on a da
 - **Selenium** — Web scraping for training data
 - **HTTP** — Communication between Java client and Python server
 - **PostgreSQL** — Database for storing shopping lists history, recipes and ingredients
+- **Pandas** — Data preprocessing and handling in Python
+- **scikit-learn** — Machine learning model training and prediction
 
