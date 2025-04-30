@@ -12,11 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientRepository implements RepositoryInterface<Ingredient> {
+    private static IngredientRepository instance;
     private final Connection con;
 
-    public IngredientRepository() throws SQLException {
+    private IngredientRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
     }
+
+    public static synchronized IngredientRepository getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new IngredientRepository();
+        }
+        return instance;
+    }
+
     @Override
     public Long save(Ingredient ob) throws SQLException {
         String query = "INSERT INTO product (productname, quantity, unit, recipe_id) VALUES (?, ?, ?, ?)";
@@ -51,6 +60,7 @@ public class IngredientRepository implements RepositoryInterface<Ingredient> {
             ingredient.setId(rs.getLong("id"));
             ingredient.setProductName(rs.getString("productname"));
             ingredient.setQuantity(rs.getFloat("quantity"));
+            ingredient.setCategory(rs.getLong("category_id"));
             if(rs.wasNull()) { //dc quantity e null inseamna ca e produs
                 return null;
             }

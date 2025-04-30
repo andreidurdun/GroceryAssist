@@ -11,14 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingListRepository implements  RepositoryInterface<ShoppingList> {
-
+    private static ShoppingListRepository instance;
     private final Connection con;
     private final ProductRepository productRepository;
-    private final IngredientRepository ingredientRepository = new IngredientRepository();
+    private final IngredientRepository ingredientRepository = IngredientRepository.getInstance();
 
-    public ShoppingListRepository() throws SQLException {
+    private ShoppingListRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
-        this.productRepository = new ProductRepository();
+        this.productRepository = ProductRepository.getInstance();
+    }
+
+    public static synchronized ShoppingListRepository getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new ShoppingListRepository();
+        }
+        return instance;
     }
 
 
@@ -33,7 +40,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
         if (rs.next()) {
             shoppingListId = rs.getLong(1);
         }
-        stmt.close();
+
 
         //inseram produsele daca nu exista deja, daca exista inseram in tabela de legatura
         String insertProductQuery = "INSERT INTO product (price, category_id, productname, quantity, unit, recipe_id) VALUES (?, ?, ?, ?, ?, ?)";
@@ -47,6 +54,7 @@ public class ShoppingListRepository implements  RepositoryInterface<ShoppingList
                 if (product.getCategoryId() != null) {
                     prstmt.setLong(2, product.getCategoryId());
                 } else {
+                    System.out.println("Category id is null");
                     prstmt.setNull(2, Types.BIGINT); // setăm categoryId ca NULL în baza de date
                 }
                 prstmt.setString(3, product.getProductName());

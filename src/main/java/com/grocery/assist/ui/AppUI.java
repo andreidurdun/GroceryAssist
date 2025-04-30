@@ -19,11 +19,11 @@ public class AppUI extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // adauga ecranele în layout
-        MainUI mainUI = new MainUI(this);
+
         RecipeUI recipeUI = new RecipeUI(this);
         ShoppingListHistoryUI historyUI = new ShoppingListHistoryUI(this);
         ShoppingListUI2 shoppingListUI = new ShoppingListUI2(this);
-        mainPanel.add(mainUI, "MainUI");
+
         mainPanel.add(recipeUI, "RecipeUI");
         mainPanel.add(historyUI, "HistoryUI");
         mainPanel.add(shoppingListUI, "ListUI");

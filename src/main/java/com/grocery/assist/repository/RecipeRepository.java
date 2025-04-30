@@ -9,12 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeRepository implements RepositoryInterface<Recipe> {
+    private static RecipeRepository instance;
     private final Connection con;
     private final IngredientRepository ingredientRepository;
 
-    public RecipeRepository() throws SQLException {
+    private RecipeRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
-        this.ingredientRepository = new IngredientRepository();
+        this.ingredientRepository = IngredientRepository.getInstance();
+    }
+
+    public static synchronized RecipeRepository getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new RecipeRepository();
+        }
+        return instance;
     }
 
     @Override

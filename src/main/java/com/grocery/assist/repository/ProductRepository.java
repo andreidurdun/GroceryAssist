@@ -11,11 +11,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ProductRepository implements RepositoryInterface<Product> {
+    private static ProductRepository instance;
     private final Connection con;
 
-
-    public ProductRepository() throws SQLException {
+    private ProductRepository() throws SQLException {
         this.con = DBConnectionManager.getConnection();
+    }
+
+    public static synchronized ProductRepository getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new ProductRepository();
+        }
+        return instance;
     }
 
     @Override
@@ -72,5 +79,13 @@ public class ProductRepository implements RepositoryInterface<Product> {
     @Override
     public List<Product> findAll() throws SQLException {
         return List.of();
+    }
+
+    public void updateCategory(Long id, Long categoryId) throws SQLException {
+        String query = "UPDATE product SET category_id = ? WHERE id = ?";
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.setLong(1, categoryId);
+        ps.setLong(2, id);
+        ps.executeUpdate();
     }
 }

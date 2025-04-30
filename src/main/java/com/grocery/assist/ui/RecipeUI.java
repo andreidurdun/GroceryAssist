@@ -15,9 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeUI extends JPanel implements Refreshable {
-    private final ShoppingListRepository shoppingListRepository = new ShoppingListRepository();
     private final IngredientService ingredientService = new IngredientService();
-    private final RecipeRepository recipeRepository = new RecipeRepository();
+    private final RecipeRepository recipeRepository = RecipeRepository.getInstance();
     private List<Recipe> recipes;
     private DefaultListModel<String> recipeNameModel = new DefaultListModel<>();
     private JTextArea detailsArea = new JTextArea();

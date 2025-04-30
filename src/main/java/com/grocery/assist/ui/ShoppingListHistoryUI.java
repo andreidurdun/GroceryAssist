@@ -5,19 +5,22 @@ import com.grocery.assist.model.Recipe;
 import com.grocery.assist.model.ShoppingList;
 import com.grocery.assist.repository.ShoppingListRepository;
 import com.grocery.assist.service.IngredientService;
+import com.grocery.assist.service.ProductService;
 import com.grocery.assist.service.ShoppingListService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
 public class ShoppingListHistoryUI extends JPanel implements Refreshable{
-    private final ShoppingListRepository shoppingListRepository = new ShoppingListRepository();
+    private final ShoppingListRepository shoppingListRepository = ShoppingListRepository.getInstance();
     private final IngredientService ingredientService = new IngredientService();
     private final ShoppingListService shoppingListService = new ShoppingListService();
+    private final ProductService productService = new ProductService();
 
     private List<ShoppingList> shoppingLists;
     private DefaultListModel<ShoppingList> dateListModel = new DefaultListModel<>();
@@ -111,12 +114,18 @@ public class ShoppingListHistoryUI extends JPanel implements Refreshable{
                         }
                     }
                 }
-
+                try {
+                    newProducts = productService.assignCategories(newProducts);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 selectedList.setProducts(newProducts);
 
                 try {
                     shoppingListRepository.update(selectedList);
-                    detailsArea.setText(selectedList.toString());
+                    detailsArea.setText(shoppingListService.printShoppingList(selectedList));
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Eroare la actualizare: " + ex.getMessage());
                 }
@@ -127,7 +136,11 @@ public class ShoppingListHistoryUI extends JPanel implements Refreshable{
             if (!e.getValueIsAdjusting()) {
                 ShoppingList selectedList = dateList.getSelectedValue();
                 if (selectedList != null) {
-                    detailsArea.setText(selectedList.toString());
+                    try {
+                        detailsArea.setText(shoppingListService.printShoppingList(selectedList));
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });

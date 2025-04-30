@@ -11,6 +11,7 @@ import com.grocery.assist.service.ShoppingListService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -36,7 +37,7 @@ public class ShoppingListUI2 extends JPanel implements Refreshable{
         setLayout(new BorderLayout());
 
         try {
-            recipeRepository = new RecipeRepository();
+            recipeRepository = RecipeRepository.getInstance();
         } catch (Exception e) {
             throw new RuntimeException("Eroare la inițializarea rețetelor: " + e.getMessage());
         }
@@ -142,9 +143,15 @@ public class ShoppingListUI2 extends JPanel implements Refreshable{
                 shoppingList = shoppingListService.createShoppingListFromProducts(ingredients);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
             System.out.println(shoppingList.toString());
-            JOptionPane.showMessageDialog(this, shoppingList.toString(), "Lista de cumparaturi", JOptionPane.INFORMATION_MESSAGE);
+            try {
+                JOptionPane.showMessageDialog(this, shoppingListService.printShoppingList(shoppingList), "Lista de cumparaturi", JOptionPane.INFORMATION_MESSAGE);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         add(topPanel, BorderLayout.NORTH);

@@ -13,6 +13,8 @@ public class IngredientService {
     public IngredientService() {}
 
     public List<Ingredient> mergeIngredients(List<Ingredient> ingredients) {
+        AuditService.getInstance().log("IngredientService: mergeIngredients");
+
         HashMap<Ingredient, Float> mergedIngredients = new HashMap<>();
 
         for(Ingredient ingredient : ingredients)
